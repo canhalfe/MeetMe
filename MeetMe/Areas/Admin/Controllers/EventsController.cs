@@ -1,5 +1,6 @@
 ﻿using MeetMe.Areas.Admin.Models;
 using MeetMe.Data;
+using MeetMe.Services;
 using MeetMe.Utilities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace MeetMe.Areas.Admin.Controllers
 {
+    [AutoValidateAntiforgeryToken]
     public class EventsController : AdminBaseController
     {
         public EventsController(ApplicationDbContext dbContext) : base(dbContext)
@@ -41,7 +43,8 @@ namespace MeetMe.Areas.Admin.Controllers
                     fileName = vm.Photo.GenerateFileName();
                     //filename kendisi üretsin aynı isimde foto çalışması olmasın diye.
                     var savePath = Path.Combine(env.WebRootPath, "img", fileName);
-                    vm.Photo.CopyTo(new FileStream(savePath, FileMode.Create));
+                    using FileStream fs = new FileStream(savePath, FileMode.Create);
+                    vm.Photo.CopyTo(fs);
                     //img'yi iwebhost ile dinamik olarak çağırıyoruz. dosya yoluyla versek her bilgiayarda doğru çalışmayacak haliyle dinamik vermek doğru olan.
                     //WebrootPath kendisi dosya yolunu veriyor zaten.(wwwroot'ta buluyor.)
                     //combine ise bu bilgilerin hepsini birleştiriyor böylce tam bir dosya yolu ortaya çıkıyor.
@@ -110,6 +113,22 @@ namespace MeetMe.Areas.Admin.Controllers
             }
             
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            var meeting = _db.Meetings.Find(id);
+
+            if (meeting == null)
+            {
+                return NotFound();
+            }
+            //var helperService = new HelperService(env);
+            //helperService.DeletePhoto(meeting.PhotoPath);
+            _db.Remove(meeting);
+            _db.SaveChanges();
+            return Json(new { success = true });
         }
     }
 }

@@ -66,8 +66,22 @@
 @*@await Html.PartialAsync("_ValidationScriptsPartial")*@
 
 <script>
-//import * as bsCustomFileInput from "../../../../wwwroot/lib/Admin/plugins/bs-custom-file-input/bs-custom-file-input";
+import { format } from "../../../../wwwroot/lib/Admin/plugins/pdfmake/pdfmake";
 
     bsCustomFileInput.init();
+    var d = new Date();
+    d.setHours(0);
+    d.setMinutes(0);
+    d.setSeconds(0);
+    d.setMilliseconds(0);
+
+    $("#meetingtimetd").datetimepicker({
+        icons: {
+            time: 'fas fa-clock'
+        },
+        //locale: 'tr',
+        format: 'DD.MM.YYYY HH:mm',
+        defaultdate: d
+    });
 </script>
 }

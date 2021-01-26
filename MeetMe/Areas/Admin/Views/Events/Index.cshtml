@@ -1,6 +1,10 @@
-﻿@model List<Meeting>
+﻿@using Microsoft.AspNetCore.Antiforgery
+@model List<Meeting>
+@inject IAntiforgery AntiForgery
 @{
     ViewBag.Title = "Events";
+    var tokenName = AntiForgery.GetTokens(Context).FormFieldName;
+    var tokenValue = AntiForgery.GetTokens(Context).RequestToken;
 }
 
 <div class="card">
@@ -25,12 +29,25 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td><img src="~/img/@item.PhotoPath" alt="@item.Title" width="100" /></td>
+                        <td>
+                            @if (string.IsNullOrEmpty(item.PhotoPath))
+                            {
+                                <i class="no-image"></i>
+                            }
+                            else
+                            {
+                                <img src="~/img/@item.PhotoPath" alt="@item.Title" width="100" />
+                            }
+                        </td>
                         <td>@item.Title</td>
                         <td>@item.Description</td>
                         <td>@item.Place</td>
                         <td>@item.MeetingTime</td>
-                        <td><a asp-action="Edit" asp-route-id="@item.Id">Edit</a> | Delete</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                            <a href="#" data-delete-id="@item.Id" data-delete-title="@item.Title">Delete</a>
+
+                        </td>
                     </tr>
                 }
 
@@ -43,14 +60,34 @@
 
 @section scripts{
     <script>
+
         $(function () {
-            $("#dataTable").DataTable({
+            var table =  $("#dataTable").DataTable({
                 "responsive": true, "lengthChange": false, "autoWidth": false,
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-            }).buttons().container().appendTo('#dataTable_wrapper .col-md-6:eq(0)');
+            });
+            table.buttons().container().appendTo('#dataTable_wrapper .col-md-6:eq(0)');
 
-            $("#linkNew").prependTo("#dataTable_wrapper .col-md-6:eq(0) .dt-buttons");
-            //appendto seçtiğin yerin içine sokuyor.
-            //prependto seçtiğin yere yama yapıyor.
-        });</script>
+            $("#linkNew").prependTo("#dataTable_wrapper .dt-buttons");
+
+            $("body").on("click", "[data-delete-id]", function (event) {
+                event.preventDefault();
+
+                var id = $(this).data("delete-id");
+                var title = $(this).data("delete-title");
+                var tr = $(this).closest("tr");
+
+                if (confirm('Are you sure about delete this bloody meeting named "' + title + '"?')) {
+                    $.ajax({
+                        type: "post",
+                        url: "@Url.Action("Delete")",
+                        data: { "@tokenName": "@tokenValue", id: id },
+                        success: function (data) {
+                            table.row(tr).remove().draw();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 }
