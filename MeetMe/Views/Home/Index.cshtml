@@ -1,4 +1,4 @@
-﻿@model List<Meeting>
+﻿@model List<MeetingViewModel>
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -11,23 +11,66 @@
     @foreach (var meeting in Model)
     {
         <div class="col-lg-6">
-            <div class="card flex-row-reverse mb-3">
-                <img src="~/img/@meeting.PhotoPath" class="meeting-img" alt="@meeting.Title" style="max-width:300px ; max-height:200px">
+            <div class="card card-meeting flex-row-reverse mb-3">
+                <img src="~/img/@meeting.PhotoPath" class="meeting-img mt-2" alt="@meeting.Title" style="max-width:250px ; max-height:200px;">
                 <div class="card-body">
                     <h5 class="card-title meeting-title">@meeting.Title</h5>
                     <p class="card-text meeting-desc">
                         @meeting.Description <br />
                     </p>
                     <p class="card-text">
-                        <strong>
-                            Place:
-                        </strong> @meeting.Place <br />
-                        <strong>Date:
-                        </strong>@meeting.MeetingTime
-                         
+                        <strong>Place:</strong> @meeting.Place <br />
+                        <strong>Date:</strong> @meeting.MeetingTime
+
                     </p>
+                    <form class="frmJoin" asp-antiforgery="true">
+                        <input type="hidden" name="meetingId" value="@meeting.Id" />
+                        <button class="btn btn-success">
+                            @if (meeting.isJoined)
+                            {
+                                <i class="fas fa-check"></i>
+                                <span>Joined</span>
+                            }
+                            else
+                            {
+                                <i class="fas fa-plus"></i>
+                                <span>Join</span>
+                            }
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     }
 </div>
+
+@section scripts{
+    <script>
+        var isAuthenticated = @(User.Identity.IsAuthenticated ? "true" : "false");
+        $("form.frmJoin").submit(function (event) {
+            var frm = this; //Önemli
+            event.preventDefault();
+
+            if (isAuthenticated) {
+                $.ajax({
+                    type: "post",
+                    url: "@Url.Action("JoinMeeting", "Home")",
+                    data: $(frm).serialize(),
+                    success: function (data) {
+                        if (data.result == "joined") {
+                            $(frm).find("button i").removeClass("fa-plus").addClass("fa-check");
+                            $(frm).find("span").text("Joined");
+                        }
+                        else {
+                            $(frm).find("button i").removeClass("fa-check").addClass("fa-plus");
+                            $(frm).find("span").text("Join");
+                        }
+                    }
+                });
+            }
+            else {
+                location.href = "@Url.Page("/Account/Login", new { area = "Identity" })";
+            }
+        });
+    </script>
+}
