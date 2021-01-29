@@ -7,11 +7,12 @@
     <div class="col-md-6">
         <div class="card card-primary">
             @*<div class="card-header">
-                <h3 class="card-title">Quick Example</h3>
-            </div>*@
+                    <h3 class="card-title">Quick Example</h3>
+                </div>*@
             <!-- /.card-header -->
             <!-- form start -->
-            <form method="post" enctype="multipart/form-data"> @*dosya upload'ı yapacaksan form'a enctype vermen gerekiyor*@
+            <form method="post" enctype="multipart/form-data">
+                @*dosya upload'ı yapacaksan form'a enctype vermen gerekiyor*@
                 <div class="card-body">
                     <div class="form-group">
                         <label asp-for="Title">Title</label>
@@ -39,14 +40,14 @@
                             <div class="custom-file">
                                 <input asp-for="Photo" class="custom-file-input" id="exampleInputFile">
                                 <label class="custom-file-label" for="exampleInputFile">Choose file</label>
-                                <span asp-validation-for="Photo"></span>
                             </div>
+                            @*<div class="input-group-append">
+                                        <span class="input-group-text">Upload</span>
+                                </div>*@
                         </div>
+                        <span asp-validation-for="Photo"></span>
                     </div>
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                        <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                    </div>
+                    
                 </div>
                 <!-- /.card-body -->
 
@@ -59,29 +60,25 @@
     </div>
 </div>
 
-@section scripts{ 
+@section scripts{
 
-<partial name="_ValidationScriptsPartial" />
-@* yada  *@
-@*@await Html.PartialAsync("_ValidationScriptsPartial")*@
+    <partial name="_ValidationScriptsPartial" />
+    @* yada  *@
+    @*@await Html.PartialAsync("_ValidationScriptsPartial")*@
 
-<script>
-import { format } from "../../../../wwwroot/lib/Admin/plugins/pdfmake/pdfmake";
+    <script>
+        bsCustomFileInput.init();
+        var d = new Date();
+        d.setHours(0);
+        d.setMinutes(0);
 
-    bsCustomFileInput.init();
-    var d = new Date();
-    d.setHours(0);
-    d.setMinutes(0);
-    d.setSeconds(0);
-    d.setMilliseconds(0);
-
-    $("#meetingtimetd").datetimepicker({
-        icons: {
-            time: 'fas fa-clock'
-        },
-        //locale: 'tr',
-        format: 'DD.MM.YYYY HH:mm',
-        defaultdate: d
-    });
-</script>
+        $("#meetingtimetd").datetimepicker({
+            icons: {
+                time: 'fas fa-clock'
+            },
+            //locale: 'tr',
+            format: 'DD.MM.YYYY HH:mm',
+            defaultdate: d
+        });
+    </script>
 }

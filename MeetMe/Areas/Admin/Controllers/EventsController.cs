@@ -1,6 +1,6 @@
 ﻿using MeetMe.Areas.Admin.Models;
 using MeetMe.Data;
-//using MeetMe.Services;
+using MeetMe.Services;
 using MeetMe.Utilities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -15,9 +15,10 @@ namespace MeetMe.Areas.Admin.Controllers
     [AutoValidateAntiforgeryToken]
     public class EventsController : AdminBaseController
     {
-        public EventsController(ApplicationDbContext dbContext) : base(dbContext)
+        private readonly HelperService helperService;
+        public EventsController(ApplicationDbContext dbContext, HelperService helperService) : base(dbContext)
         {
-
+            this.helperService = helperService;
         }
         public IActionResult Index()
         {
@@ -26,9 +27,9 @@ namespace MeetMe.Areas.Admin.Controllers
         }
         public IActionResult New()
         {
-
             return View();
         }
+
         [HttpPost]
         public IActionResult New(NewMeetingViewModel vm, [FromServices] IWebHostEnvironment env)
         {
@@ -43,6 +44,7 @@ namespace MeetMe.Areas.Admin.Controllers
                     fileName = vm.Photo.GenerateFileName();
                     //filename kendisi üretsin aynı isimde foto çalışması olmasın diye.
                     var savePath = Path.Combine(env.WebRootPath, "img", fileName);
+                    // fs nesnesi bulunduğu scope'tan çıkılırken dispose edilir (using sayesinde);
                     using FileStream fs = new FileStream(savePath, FileMode.Create);
                     vm.Photo.CopyTo(fs);
                     //img'yi iwebhost ile dinamik olarak çağırıyoruz. dosya yoluyla versek her bilgiayarda doğru çalışmayacak haliyle dinamik vermek doğru olan.
@@ -59,7 +61,7 @@ namespace MeetMe.Areas.Admin.Controllers
                     Place = vm.Place,
                     PhotoPath = fileName
                 };
-                _db.Add(meeting);
+                _db.Meetings.Add(meeting);
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -79,9 +81,9 @@ namespace MeetMe.Areas.Admin.Controllers
                 Id = meeting.Id,
                 Title = meeting.Title,
                 Description = meeting.Description,
-                Place = meeting.Place,
                 MeetingTime = meeting.MeetingTime,
-                ExistingPhotoPath = meeting.PhotoPath
+                ExistingPhotoPath = meeting.PhotoPath,
+                Place = meeting.Place,
             };
             return View(vm);
         }
@@ -95,7 +97,8 @@ namespace MeetMe.Areas.Admin.Controllers
                 {
                     fileName = vm.Photo.GenerateFileName();
                     var savePath = Path.Combine(env.WebRootPath, "img", fileName);
-                    vm.Photo.CopyTo(new FileStream(savePath, FileMode.Create));
+                    using FileStream fs = new FileStream(savePath, FileMode.Create);
+                    vm.Photo.CopyTo(fs);
                 }
 
                 var meeting = _db.Meetings.Find(vm.Id);
@@ -106,6 +109,7 @@ namespace MeetMe.Areas.Admin.Controllers
                 if (!string.IsNullOrEmpty(fileName))
                 {
                     //todo: mevcut resim varsa sil
+                    helperService.DeletePhoto(meeting.PhotoPath);
                     meeting.PhotoPath = fileName;
                 }
                 _db.SaveChanges();
@@ -124,8 +128,9 @@ namespace MeetMe.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            //var helperService = new HelperService(env);
-            //helperService.DeletePhoto(meeting.PhotoPath);
+            
+            helperService.DeletePhoto(meeting.PhotoPath);
+
             _db.Remove(meeting);
             _db.SaveChanges();
             return Json(new { success = true });

@@ -13,7 +13,7 @@ namespace MeetMe.Data
     {
         // http://www.binaryintellect.net/articles/5e180dfa-4438-45d8-ac78-c7cc11735791.aspx
         public async static Task SeedRolesAndUsersAsync(
-            RoleManager<IdentityRole> roleManager, 
+            RoleManager<IdentityRole> roleManager,
             UserManager<ApplicationUser> userManager)
         {
             var roleName = "admin";
@@ -37,27 +37,7 @@ namespace MeetMe.Data
                 await userManager.AddToRoleAsync(user, roleName);
             }
         }
-        public static async Task<IHost> SeedAsync(this IHost host)
-        {
-            // http://www.binaryintellect.net/articles/5e180dfa-4438-45d8-ac78-c7cc11735791.aspx
-            // https://github.com/dotnet-architecture/eShopOnWeb/blob/master/src/Web/Startup.cs
-            using (var scope = host.Services.CreateScope())
-            {
-                var serviceProvider = scope.ServiceProvider;
-                var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-                var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                var env = serviceProvider.GetRequiredService<IHostEnvironment>();
-                var db = serviceProvider.GetRequiredService<ApplicationDbContext>();
-                await SeedRolesAndUsersAsync(roleManager, userManager);
 
-                if (env.IsDevelopment())
-                {
-                    //if env is developement environment;
-                    SeedMeetings(db);
-                }
-            }
-            return host;
-        }
 
         private static void SeedMeetings(ApplicationDbContext db)
         {
@@ -81,6 +61,51 @@ namespace MeetMe.Data
                 });
                 db.SaveChanges();
             }
+        }
+
+        private static void SeedMeetings(ApplicationDbContext db, int count)
+        {
+            //static Random rnd = new Random();
+
+
+
+            int currentCount = db.Meetings.Count();
+
+            for (int i = currentCount + 1; i <= count; i++)
+            {
+                db.Meetings.Add(new Meeting
+                {
+                    Title = "Meeting" + i,
+                    Description = "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt",
+                    Place = "Yarımca, Izmit",
+                    MeetingTime = DateTime.Now.AddDays(-i),
+                    PhotoPath = "meeting1.jpg"
+                });
+                db.SaveChanges();
+            }
+
+        }
+        public static async Task<IHost> SeedAsync(this IHost host)
+        {
+            // http://www.binaryintellect.net/articles/5e180dfa-4438-45d8-ac78-c7cc11735791.aspx
+            // https://github.com/dotnet-architecture/eShopOnWeb/blob/master/src/Web/Startup.cs
+            using (var scope = host.Services.CreateScope())
+            {
+                var serviceProvider = scope.ServiceProvider;
+                var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var env = serviceProvider.GetRequiredService<IHostEnvironment>();
+                var db = serviceProvider.GetRequiredService<ApplicationDbContext>();
+                await SeedRolesAndUsersAsync(roleManager, userManager);
+
+                if (env.IsDevelopment())
+                {
+                    //if env is developement environment;
+                    SeedMeetings(db);
+                    SeedMeetings(db, 98);
+                }
+            }
+            return host;
         }
     }
 }

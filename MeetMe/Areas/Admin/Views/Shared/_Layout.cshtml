@@ -1,4 +1,8 @@
 ﻿<!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -7,15 +11,16 @@
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome Icons -->
+    <link href="~/lib/admin/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
     <!-- DataTables -->
     <link rel="stylesheet" href="~/lib/admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="~/lib/admin/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="~/lib/admin/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <!-- Tempusdominus Bootstrap 4 -->
     <link rel="stylesheet" href="~/lib/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-    <!-- Font Awesome Icons -->
-    <link href="~/lib/Admin/plugins/fontawesome-free/css/all.css" rel="stylesheet" />
     <!-- Theme style -->
-    <link href="~/lib/Admin/dist/css/adminlte.css" rel="stylesheet" />
+    <link href="~/lib/admin/dist/css/adminlte.css" rel="stylesheet" />
     <link href="~/css/admin.css" rel="stylesheet" />
 </head>
 <body class="hold-transition sidebar-mini">
@@ -153,7 +158,7 @@
             <!-- Brand Logo -->
             <a href="index3.html" class="brand-link">
                 <img src="~/lib/admin/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-                <span class="brand-text font-weight-light">Administrator</span>
+                <span class="brand-text font-weight-light">AdminLTE 3</span>
             </a>
 
             <!-- Sidebar -->
@@ -161,11 +166,10 @@
                 <!-- Sidebar user panel (optional) -->
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                     <div class="image">
-                        <img
-                        <img src="~/lib/Admin/dist/img/IMG_0301.JPG" class="img-circle elevation-2" alt="User Image">
+                        <img src="~/lib/admin/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
                     </div>
                     <div class="info">
-                        <a href="#" class="d-block">Can Halfeoğulları</a>
+                        <a href="#" class="d-block">Alexander Pierce</a>
                     </div>
                 </div>
 
@@ -188,18 +192,14 @@
                         with font-awesome or any other icon font library -->
                         <li class="nav-item">
                             <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link">
-                                <i class="nav-icon fas fa-home"></i>
-                                <p>
-                                    Back to Homepage
-                                </p>
+                                <i class="nav-icon fas fa-external-link-alt"></i>
+                                <p>Go To Homepage</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a asp-controller="Dashboard" asp-action="Index" class="nav-link">
                                 <i class="nav-icon fas fa-tachometer-alt"></i>
-                                <p>
-                                    Dashboard
-                                </p>
+                                <p>Dashboard</p>
                             </a>
                         </li>
                         <li class="nav-item menu-open">
@@ -212,15 +212,15 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a asp-controller="Events" asp-action="Index" class="nav-link ">
-                                        <i class="fas fa-list nav-icon"></i>
-                                        <p>List Events</p>
+                                    <a asp-controller="Events" asp-action="New" class="nav-link">
+                                        <i class="fas fa-plus nav-icon"></i>
+                                        <p>New Event</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a asp-controller="Events" asp-action="New" class="nav-link ">
-                                        <i class="fas fa-plus nav-icon"></i>
-                                        <p>New Event</p>
+                                    <a asp-controller="Events" asp-action="Index" class="nav-link">
+                                        <i class="fas fa-list nav-icon"></i>
+                                        <p>List Events</p>
                                     </a>
                                 </li>
                             </ul>
@@ -273,7 +273,7 @@
         <footer class="main-footer">
             <!-- To the right -->
             <div class="float-right d-none d-sm-inline">
-                Anything you want
+                <vc:upcoming-event></vc:upcoming-event>
             </div>
             <!-- Default to the left -->
             <strong>Copyright &copy; 2014-2020 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
@@ -282,11 +282,15 @@
     <!-- ./wrapper -->
     <!-- REQUIRED SCRIPTS -->
     <!-- jQuery -->
-    <script src="~/lib/Admin/plugins/jquery/jquery.min.js"></script>
-
-
+    <script src="~/lib/admin/plugins/jquery/jquery.min.js"></script>
     <!-- Bootstrap 4 -->
-    <script src="~/lib/Admin/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/lib/admin/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- bs-custom-file-input -->
+    <script src="~/lib/admin/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+    <!-- Moment.js -->
+    <script src="~/lib/admin/plugins/moment/moment-with-locales.min.js"></script>
+    <!-- Tempusdominus Bootstrap 4 -->
+    <script src="~/lib/admin/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
     <!-- DataTables  & Plugins -->
     <script src="~/lib/admin/plugins/datatables/jquery.dataTables.min.js"></script>
     <script src="~/lib/admin/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
@@ -295,17 +299,14 @@
     <script src="~/lib/admin/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
     <script src="~/lib/admin/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
     <script src="~/lib/admin/plugins/jszip/jszip.min.js"></script>
-    <script src="~/lib/Admin/plugins/moment/moment.min.js"></script>
-    <script src="~/lib/admin/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-    <script src="~/lib/admin/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
     <script src="~/lib/admin/plugins/pdfmake/pdfmake.min.js"></script>
     <script src="~/lib/admin/plugins/pdfmake/vfs_fonts.js"></script>
     <script src="~/lib/admin/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
     <script src="~/lib/admin/plugins/datatables-buttons/js/buttons.print.min.js"></script>
     <script src="~/lib/admin/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
     <!-- AdminLTE App -->
-    <script src="~/lib/Admin/dist/js/adminlte.min.js"></script>
-    <script src="~/js/Admin.js"></script>
+    <script src="~/lib/admin/dist/js/adminlte.min.js"></script>
+    <script src="~/js/admin.js"></script>
     @RenderSection("scripts", required: false)
 </body>
 </html>

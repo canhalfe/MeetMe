@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Antiforgery
-@model List<Meeting>
 @inject IAntiforgery AntiForgery
+@model List<Meeting>
 @{
     ViewBag.Title = "Events";
     var tokenName = AntiForgery.GetTokens(Context).FormFieldName;
@@ -60,9 +60,9 @@
 
 @section scripts{
     <script>
-
         $(function () {
-            var table =  $("#dataTable").DataTable({
+            // https://datatables.net/reference/api/row().remove()
+            var table = $("#dataTable").DataTable({
                 "responsive": true, "lengthChange": false, "autoWidth": false,
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
             });
@@ -77,7 +77,7 @@
                 var title = $(this).data("delete-title");
                 var tr = $(this).closest("tr");
 
-                if (confirm('Are you sure about delete this bloody meeting named "' + title + '"?')) {
+                if (confirm('Are you sure to delete the meeting "' + title + '"?')) {
                     $.ajax({
                         type: "post",
                         url: "@Url.Action("Delete")",
@@ -87,7 +87,7 @@
                         }
                     });
                 }
-            });
+            })
         });
     </script>
 }
